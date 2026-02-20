@@ -72,9 +72,6 @@ struct UserListView: View {
             }
             .navigationTitle("Contacts")
             .searchable(text: $viewModel.searchText, prompt: "Search by name...")
-            .onAppear(perform: {
-                viewModel.loadData()
-            })
             // 🚨 NEW: Alert with TextField
             .alert("Update Name", isPresented: $showingUpdateAlert, presenting: userToUpdate) { user in
                 TextField("Enter new name", text: $newName)

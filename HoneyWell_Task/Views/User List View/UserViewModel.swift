@@ -37,6 +37,7 @@ final class UserViewModel {
     init(dataManager: UserDataManager) {
         self.dataManager = dataManager
         setupSearchPublisher()
+        loadData()
     }
     
     func loadData() {
@@ -91,26 +92,31 @@ final class UserViewModel {
     // READ
     func loadSavedUsers() {
         self.savedUsers = coreDataManager.fetchAllUsers()
-        covertLocalModelIntoApiModel()
     }
     
     func covertLocalModelIntoApiModel() {
         
+        var localFecthusers = [User]()
+        
         self.savedUsers.forEach { user in
-            self.fetchedUsers.append(User.init(id: Int(user.id), name: user.name ?? "NA", email: user.email ?? "NA", phone: user.phone ?? "NA"))
+            localFecthusers.append(User.init(id: Int(user.id), name: user.name ?? "NA", email: user.email ?? "NA", phone: user.phone ?? "NA"))
             
         }
+        
+        self.fetchedUsers = localFecthusers
     }
     
     // UPDATE
     func updateUserName(id: Int, newName: String) {
         coreDataManager.updateUser(id: id, newName: newName)
         loadSavedUsers() // Refresh list after update
+        covertLocalModelIntoApiModel()
     }
     
     // DELETE
     func deleteUser(id: Int) {
         coreDataManager.deleteUser(id: id)
         loadSavedUsers() // Refresh list after delete
+        covertLocalModelIntoApiModel()
     }
 }

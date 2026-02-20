@@ -43,12 +43,10 @@ final class UserViewModelTests: XCTestCase {
         
         viewModel.loadData()
         
-        // Intezaar thoda badhao ya specific check karo
         try? await Task.sleep(nanoseconds: 2_000_000_000)
         
         XCTAssertFalse(viewModel.fetchedUsers.isEmpty)
         
-        // Check karo ki kya result mein "Leanne Graham" kahin bhi hai, order matter nahi karta
         let hasLeanne = viewModel.fetchedUsers.contains { $0.name == "Leanne Graham" }
         XCTAssertTrue(hasLeanne, "Fetched users should contain Leanne Graham")
     }
@@ -57,14 +55,9 @@ final class UserViewModelTests: XCTestCase {
     func testSearchDebounce_TriggersWithCorrectQuery() async {
         let expectation = XCTestExpectation(description: "Search triggers loading state")
         
-        // When: User types
         viewModel.searchText = "Lean"
         
-        // Then: Loading state check karne ke liye delay bohot chota hona chahiye (before API finish)
-        // 0.6s is perfect (500ms debounce + 100ms processing start)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            // Agar Mock bohot fast hai toh shayad loading khatam ho jaye,
-            // isliye logic check karo ki loading start hui thi ya nahi
             XCTAssertTrue(self.viewModel.isLoading)
             expectation.fulfill()
         }
@@ -75,12 +68,9 @@ final class UserViewModelTests: XCTestCase {
 
     @MainActor
     func testConversion_WhenDatabaseHasNilValues_ProvidesDefaults() {
-        // Note: This tests your 'covertLocalModelIntoApiModel' method
-        // Success case for default "NA" handling
+        
         viewModel.loadSavedUsers() // Calls conversion
         
-        // Assertions based on your Core Data state
-        // If empty, fetchedUsers will be empty but won't crash
         XCTAssertNotNil(viewModel.fetchedUsers)
     }
 }
